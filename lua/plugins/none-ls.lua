@@ -2,21 +2,15 @@ return {
 	"nvimtools/none-ls.nvim",
 	dependencies = {
 		"nvim-lua/plenary.nvim",
+		"nvimtools/none-ls-extras.nvim",
 	},
 	config = function()
 		local null_ls = require("null-ls")
 		null_ls.setup({
+			debug = true,
 			sources = {
-				null_ls.builtins.formatting.stylua,
-				null_ls.builtins.diagnostics.cpplint,
-				null_ls.builtins.formatting.clang_format,
-				null_ls.builtins.formatting.prettier,
-				null_ls.builtins.formatting.erb_formatter,
+				require("none-ls.diagnostics.cpplint"),
 			},
 		})
-
-		vim.keymap.set("n", "<leader>f", function()
-			vim.lsp.buf.format({ async = false })
-		end, {})
 	end,
 }

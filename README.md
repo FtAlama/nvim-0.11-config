@@ -1,6 +1,11 @@
 # How to config
 
+## prerequisite
+
+you need to install some dependency : nvim 0.11, ruby and gem
+
 ## Install
+
 Use the follow command :
 ```
 cd ~/.config
