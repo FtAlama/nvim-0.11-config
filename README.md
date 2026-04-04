@@ -2,7 +2,7 @@
 
 ## prerequisite
 
-you need to install some dependency : nvim 0.11, ruby and gem
+you need to install some dependency : nvim 0.11, ruby, gem and ripgrep for telescope live grep
 
 ## Install
 
