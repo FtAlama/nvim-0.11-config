@@ -41,7 +41,15 @@ return {
 			vim.lsp.config("*", {
 				capabilities = require("cmp_nvim_lsp").default_capabilities(),
 			})
-
+			vim.lsp.config("clangd", {
+				cmd = {
+					"clangd",
+					"--background-index",
+					"--clang-tidy",
+					"--header-insertion=never",
+					"--query-driver=/usr/bin/clang++,/usr/bin/c++,/usr/bin/gcc,/usr/bin/g++,/opt/homebrew/bin/*",
+				},
+			})
 			vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Probleme sous le curseur" })
 
 			vim.api.nvim_create_autocmd("LspAttach", {
