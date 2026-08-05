@@ -1,10 +1,21 @@
+if vim.fn.has("nvim-0.12") == 0 then
+	vim.schedule(function()
+		vim.notify(
+			"Cette configuration requiert Neovim 0.12 ou superieur.\n"
+				.. "Version detectee : "
+				.. tostring(vim.version())
+				.. "\nLe LSP et treesitter ne fonctionneront pas correctement.",
+			vim.log.levels.ERROR
+		)
+	end)
+end
+
 vim.filetype.add({
 	extension = {
 		tpp = "cpp",
 	},
 })
 
--- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
@@ -21,14 +32,9 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Make sure to setup `mapleader` and `maplocalleader` before
--- loading lazy.nvim so that mappings are correct.
--- This is also a good place to setup other settings (vim.opt)
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
--- Vim options file
 require("vim-options")
 
--- Setup lazy.nvim
 require("lazy").setup("plugins")

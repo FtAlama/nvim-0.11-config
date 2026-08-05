@@ -1,12 +1,24 @@
 return {
 	{
 	'nvim-telescope/telescope.nvim',
-	tag = '0.1.8',
+	version = '*',
 	dependencies = { 'nvim-lua/plenary.nvim' },
 	config = function()
 		local builtin = require("telescope.builtin")
-		vim.keymap.set('n', '<leader>p', builtin.find_files, {})
-		vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
+		local map = function(lhs, rhs, desc)
+			vim.keymap.set('n', lhs, rhs, { desc = desc })
+		end
+
+		map('<leader>p', builtin.find_files, 'Fichiers')
+		map('<leader>fg', builtin.live_grep, 'Recherche live')
+
+		map('<leader>s', builtin.lsp_document_symbols, 'Symboles du fichier')
+		map('<leader>S', builtin.lsp_dynamic_workspace_symbols, 'Symboles du projet')
+
+		map('<leader>D', builtin.diagnostics, 'Tous les diagnostics')
+
+		map('<leader>b', builtin.buffers, 'Buffers ouverts')
+		map('<leader>*', builtin.grep_string, 'Chercher le mot sous le curseur')
 	end
 	},
 	{
@@ -23,4 +35,3 @@ return {
 	end
 	}
 }
-

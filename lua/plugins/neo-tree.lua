@@ -7,15 +7,18 @@ return {
 		"nvim-tree/nvim-web-devicons",
 	},
 	lazy = false,
-	config = function()
+	opts = {
 		event_handlers = {
-					{
-						event = "neo_tree_buffer_enter",
-						handler = function(arg)
-							vim.cmd [[setlocal relativenumber]]
-						end,
-					}
-				},
-				vim.keymap.set('n', '<leader>e', ':Neotree filesystem reveal left<CR>', {})
-	end
+			{
+				event = "neo_tree_buffer_enter",
+				handler = function()
+					vim.cmd([[setlocal relativenumber]])
+				end,
+			},
+		},
+	},
+	config = function(_, opts)
+		require("neo-tree").setup(opts)
+		vim.keymap.set("n", "<leader>e", ":Neotree filesystem reveal left<CR>", { desc = "Neo-tree" })
+	end,
 }

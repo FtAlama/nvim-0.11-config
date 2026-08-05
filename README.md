@@ -1,30 +1,89 @@
 # How to config
 
-## prerequisite
-
-you need to install some dependency : nvim 0.11, ruby and gem
-
 ## Install
 
-Use the follow command :
+### 1. system dependencies
+
+**macOS**
+```sh
+xcode-select --install
+brew install neovim tree-sitter-cli ripgrep node
 ```
-cd ~/.config
-git clone git@github.com:FtAlama/nvim-0.11-config.git nvim
+
+**Arch / Manjaro**
+```sh
+sudo pacman -S neovim base-devel git curl tar tree-sitter-cli ripgrep nodejs npm
+```
+
+**Debian / Ubuntu**
+```sh
+sudo apt install build-essential git curl tar ripgrep nodejs npm
+curl -LO https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.appimage
+chmod +x nvim-linux-x86_64.appimage && sudo mv nvim-linux-x86_64.appimage /usr/local/bin/nvim
+cargo install --locked tree-sitter-cli
+```
+
+> Do **not** install tree-sitter-cli from npm : nvim-treesitter needs the real CLI.
+
+| dependency | needed for |
+|---|---|
+| ruby + gem | the `erb_formatter` formatter for `.erb` files |
+
+### 2. clone and start
+
+```sh
+git clone git@github.com:FtAlama/nvim-0.11-config.git ~/.config/nvim
 nvim
 ```
 
-and wait Lazy to install all the package
+## Command
 
-## Usefull command
+`space` is the leader key.
 
-use 'space + e' for the treesitter
+### files and search
 
->in the tree use 'a' for creat a new file and if you want a directory terminate with '/'
+| key | action |
+|---|---|
+| `space + e` | file tree (neo-tree) — in the tree, `a` creates a file, end with `/` for a directory |
+| `space + p` | find files |
+| `space + fg` | live grep |
+| `space + b` | open buffers |
+| `space + *` | search the word under the cursor |
 
-use 'space + p' for the telescope research
+### navigation
 
-use 'space + fg' for live grep
+| key | action |
+|---|---|
+| `space + s` | **go to a function** — symbols of the current file |
+| `space + S` | symbols of the whole project |
+| `gd` | go to definition |
+| `space + i` | go to implementation |
+| `space + l` | references |
+| `ctrl + o` | **go back where you were** (built-in jumplist) |
+| `ctrl + i` | go forward again |
 
-use 'space + f' for formatting a file
+### problems
 
-use 'gd' to go into a definition
+| key | action |
+|---|---|
+| `space + d` | show the problem under the cursor |
+| `space + D` | list every problem of the project |
+| `]d` / `[d` | next / previous problem (built-in) |
+
+### code
+
+| key | action |
+|---|---|
+| `space + f` | format the file (or the selection in visual mode) |
+| `space + ca` | code action |
+| `D` | hover documentation |
+| `grn` | rename the symbol (built-in) |
+
+### C/C++ specific
+
+| key | action |
+|---|---|
+| `space + h` | switch between `.cpp` and `.hpp` (clangd) |
+| `space + th` | toggle inlay hints (parameter names and types) |
+
+`:LspClangdShowSymbolInfo` also shows the type info of the symbol under the cursor.
