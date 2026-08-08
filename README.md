@@ -79,6 +79,26 @@ nvim
 | `D` | hover documentation |
 | `grn` | rename the symbol (built-in) |
 
+### folding
+
+Collapse a function to its signature only.
+
+| key | action |
+|---|---|
+| `space + z` | fold / unfold the function under the cursor |
+| `space + Z` | fold / unfold **every** function at once |
+
+```
+ 3 | +--  8 lines: int ft_func(int a, int b)
+```
+
+Both keys toggle : press again to get back. The built-in `zc`, `zo`, `za`, `zM`,
+`zR` still work if you prefer them.
+
+Files always open fully unfolded (`foldlevel=99`). Folding only applies to
+filetypes that have a treesitter parser — plain text, neo-tree and the like are
+untouched.
+
 ### C/C++ specific
 
 | key | action |
