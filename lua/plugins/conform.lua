@@ -25,12 +25,12 @@ return {
 
 		conform.setup({
 			formatters = clang_format and {
-				clang_format = { command = clang_format },
+				["clang-format"] = { command = clang_format },
 			} or {},
 			formatters_by_ft = {
 				lua = { "stylua" },
-				cpp = { "clang_format" },
-				c = { "clang_format" },
+				cpp = { "clang-format" },
+				c = { "clang-format" },
 				javascript = { "prettier" },
 				typescript = { "prettier" },
 				javascriptreact = { "prettier" },
@@ -40,7 +40,7 @@ return {
 				json = { "prettier" },
 				yaml = { "prettier" },
 				markdown = { "prettier" },
-				eruby = { "erb_formatter" },
+				eruby = { "erb_format" },
 			},
 		})
 		vim.keymap.set({ "n", "v" }, "<leader>f", function()

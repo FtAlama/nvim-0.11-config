@@ -4,52 +4,90 @@ return {
 	lazy = false,
 	build = ":TSUpdate",
 	config = function()
-		if vim.fn.executable("tree-sitter") == 0 then
-			vim.schedule(function()
+		local has_tree_sitter_cli = vim.fn.executable("tree-sitter") == 1
+
+		local parsers = {
+			tpp = { "cpp" },
+			c = { "c" },
+			cpp = { "cpp" },
+			lua = { "lua", "luadoc" },
+			vim = { "vim" },
+			help = { "vimdoc" },
+			query = { "query" },
+			markdown = { "markdown", "markdown_inline" },
+			html = { "html" },
+			css = { "css" },
+			javascript = { "javascript" },
+			javascriptreact = { "javascript", "tsx" },
+			typescript = { "typescript", "tsx" },
+			typescriptreact = { "typescript", "tsx" },
+			json = { "json" },
+			yaml = { "yaml" },
+			sh = { "bash" },
+		}
+
+		local parser_languages = {
+			tpp = "cpp",
+			javascriptreact = "tsx",
+			typescriptreact = "tsx",
+		}
+		local parser_filetypes = {
+			tpp = "cpp",
+			javascriptreact = "typescriptreact",
+		}
+
+		local installing, installed = {}, {}
+		local function start_treesitter(buf, filetype)
+			local lang = parser_languages[filetype] or vim.treesitter.language.get_lang(filetype)
+			if not lang then
+				return
+			end
+
+			if pcall(vim.treesitter.start, buf, lang) then
+				vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+				for _, win in ipairs(vim.fn.win_findbuf(buf)) do
+					vim.wo[win].foldmethod = "expr"
+					vim.wo[win].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+				end
+				return
+			end
+
+			local parser_filetype = parser_filetypes[filetype] or filetype
+			local required = parsers[parser_filetype]
+			if not required or installing[parser_filetype] or installed[parser_filetype] then
+				return
+			end
+			if not has_tree_sitter_cli then
 				vim.notify(
-					"nvim-treesitter : le CLI `tree-sitter` (>= 0.26.1) est introuvable, "
-					.. "aucun parser ne peut etre compile.\n"
-					.. "  macOS  : brew install tree-sitter-cli\n"
-					.. "  Arch   : pacman -S tree-sitter-cli\n"
-					.. "  Debian : cargo install --locked tree-sitter-cli\n"
-					.. "(un compilateur C est aussi requis)",
+					"Treesitter nécessite tree-sitter-cli (>= 0.26.1) et un compilateur C. Installe-les puis relance Neovim.",
 					vim.log.levels.WARN
 				)
+				return
+			end
+
+			installing[parser_filetype] = true
+			require("nvim-treesitter").install(required):await(function(err, success)
+				installing[parser_filetype] = nil
+				if err or not success then
+					vim.notify(("Échec installation parser Treesitter pour %s"):format(filetype), vim.log.levels.WARN)
+					return
+				end
+				installed[parser_filetype] = true
+				for _, target in ipairs(vim.api.nvim_list_bufs()) do
+					if vim.api.nvim_buf_is_valid(target) then
+						local target_filetype = vim.bo[target].filetype
+						local target_parser_filetype = parser_filetypes[target_filetype] or target_filetype
+						if target_parser_filetype == parser_filetype then
+							start_treesitter(target, target_filetype)
+						end
+					end
+				end
 			end)
-		else
-			require("nvim-treesitter").install({
-				"c",
-				"cpp",
-				"lua",
-				"luadoc",
-				"vim",
-				"vimdoc",
-				"query",
-				"markdown",
-				"markdown_inline",
-				"html",
-				"css",
-				"javascript",
-				"typescript",
-				"tsx",
-				"json",
-				"yaml",
-				"bash",
-			})
 		end
 
 		vim.api.nvim_create_autocmd("FileType", {
 			callback = function(args)
-				local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)
-				if not lang then
-					return
-				end
-				if not pcall(vim.treesitter.start, args.buf, lang) then
-					return
-				end
-				vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-				vim.wo[0][0].foldmethod = "expr"
-				vim.wo[0][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+				start_treesitter(args.buf, vim.bo[args.buf].filetype)
 			end,
 		})
 	end,

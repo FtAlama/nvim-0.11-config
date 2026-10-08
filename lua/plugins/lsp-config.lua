@@ -4,25 +4,6 @@ return {
 		lazy = false,
 		config = function()
 			require("mason").setup()
-
-			local tools = {
-				{ "stylua" },
-				{ "clang-format" },
-				{ "prettier", "npm" },
-			}
-
-			local registry = require("mason-registry")
-			registry.refresh(function()
-				for _, entry in ipairs(tools) do
-					local name, requires = entry[1], entry[2]
-					if not requires or vim.fn.executable(requires) == 1 then
-						local ok, pkg = pcall(registry.get_package, name)
-						if ok and not pkg:is_installed() then
-							pkg:install()
-						end
-					end
-				end
-			end)
 		end,
 	},
 	{
@@ -41,15 +22,23 @@ return {
 			vim.lsp.config("*", {
 				capabilities = require("cmp_nvim_lsp").default_capabilities(),
 			})
-			vim.lsp.config("clangd", {
-				cmd = {
-					"clangd",
-					"--background-index",
-					"--clang-tidy",
-					"--header-insertion=never",
-					"--query-driver=/usr/bin/clang++,/usr/bin/c++,/usr/bin/gcc,/usr/bin/g++,/opt/homebrew/bin/*",
-				},
-			})
+			local clangd_cmd = {
+				"clangd",
+				"--background-index",
+				"--clang-tidy",
+				"--header-insertion=never",
+			}
+			local query_drivers = {}
+			for _, compiler in ipairs({ "clang++", "clang", "c++", "g++", "gcc" }) do
+				local path = vim.fn.exepath(compiler)
+				if path ~= "" and not vim.tbl_contains(query_drivers, path) then
+					table.insert(query_drivers, path)
+				end
+			end
+			if #query_drivers > 0 then
+				table.insert(clangd_cmd, "--query-driver=" .. table.concat(query_drivers, ","))
+			end
+			vim.lsp.config("clangd", { cmd = clangd_cmd })
 			vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Probleme sous le curseur" })
 
 			vim.api.nvim_create_autocmd("LspAttach", {
@@ -82,37 +71,8 @@ return {
 				end,
 			})
 
-			local servers = {
-				{ "lua_ls" },
-				{ "clangd" },
-				{ "vimls", "npm" },
-				{ "html", "npm" },
-				{ "cssls", "npm" },
-			}
-
-			local ensure_installed, skipped = {}, {}
-			for _, entry in ipairs(servers) do
-				local name, requires = entry[1], entry[2]
-				if not requires or vim.fn.executable(requires) == 1 then
-					table.insert(ensure_installed, name)
-				else
-					table.insert(skipped, name)
-				end
-			end
-
-			if #skipped > 0 then
-				vim.schedule(function()
-					vim.notify(
-						("LSP ignores (npm introuvable) : %s\nInstalle node/npm puis relance :MasonInstall"):format(
-							table.concat(skipped, ", ")
-						),
-						vim.log.levels.WARN
-					)
-				end)
-			end
-
 			require("mason-lspconfig").setup({
-				ensure_installed = ensure_installed,
+				automatic_enable = { "lua_ls", "clangd", "vimls", "html", "cssls" },
 			})
 		end,
 	},

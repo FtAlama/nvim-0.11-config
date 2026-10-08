@@ -9,7 +9,7 @@ vim.cmd("set foldlevel=99")
 vim.cmd("set foldlevelstart=99")
 
 vim.keymap.set("n", "<leader>z", function()
-	if vim.fn.foldlevel(".") == 0 then
+	if vim.fn.foldlevel(vim.fn.line(".")) == 0 then
 		return
 	end
 	vim.cmd("normal! za")

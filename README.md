@@ -7,27 +7,24 @@
 **macOS**
 ```sh
 xcode-select --install
-brew install neovim tree-sitter-cli ripgrep node
+brew install neovim ripgrep tree-sitter-cli
 ```
 
 **Arch / Manjaro**
 ```sh
-sudo pacman -S neovim base-devel git curl tar tree-sitter-cli ripgrep nodejs npm
+sudo pacman -S neovim git curl tar ripgrep
 ```
 
 **Debian / Ubuntu**
 ```sh
-sudo apt install build-essential git curl tar ripgrep nodejs npm
-curl -LO https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.appimage
-chmod +x nvim-linux-x86_64.appimage && sudo mv nvim-linux-x86_64.appimage /usr/local/bin/nvim
-cargo install --locked tree-sitter-cli
+sudo apt install git curl tar ripgrep
 ```
+
+Install Neovim 0.12 or newer using your distribution's package manager, Homebrew, or the official release for your OS and architecture. Treesitter parsers are optional; to use them, install `tree-sitter-cli` (>= 0.26.1) and a C compiler such as Clang. macOS users can use Xcode Command Line Tools and Homebrew; Linux users can install Clang and the CLI from their package manager. If unavailable, the CLI can be built with Cargo after installing Rust.
 
 > Do **not** install tree-sitter-cli from npm : nvim-treesitter needs the real CLI.
 
-| dependency | needed for |
-|---|---|
-| ruby + gem | the `erb_formatter` formatter for `.erb` files |
+Node.js/npm are only needed for JavaScript-based language servers or formatters you choose to install. Ruby and the `erb-formatter` gem are only needed for ERB formatting; its executable is `erb-format`.
 
 ### 2. clone and start
 
@@ -35,6 +32,10 @@ cargo install --locked tree-sitter-cli
 git clone git@github.com:FtAlama/nvim-0.11-config.git ~/.config/nvim
 nvim
 ```
+
+On first launch, `lazy.nvim` downloads the plugins. LSP servers and formatters are not installed automatically; use `:Mason` to browse packages and `:MasonInstall <package>` to install them. The configured LSP servers are enabled automatically only after you install them. Treesitter parsers are installed the first time you open a supported filetype.
+
+For example, use `:MasonInstall lua-language-server clangd vim-language-server html-lsp css-lsp stylua clang-format` for the configured LSP servers and formatters. Install `prettier` from Mason if Node.js/npm is available. For ERB formatting, install Ruby and run `gem install erb-formatter`.
 
 ## Command
 
