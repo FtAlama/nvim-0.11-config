@@ -24,7 +24,7 @@ Install Neovim 0.12 or newer using your distribution's package manager, Homebrew
 
 > Do **not** install tree-sitter-cli from npm : nvim-treesitter needs the real CLI.
 
-Node.js/npm are only needed for JavaScript-based language servers or formatters you choose to install. Ruby and the `erb-formatter` gem are only needed for ERB formatting; its executable is `erb-format`.
+Node.js/npm are only needed for JavaScript-based language servers or formatters you choose to install. Ruby is optional and only needed for ERB formatting.
 
 ### 2. clone and start
 
@@ -35,7 +35,29 @@ nvim
 
 On first launch, `lazy.nvim` downloads the plugins. LSP servers and formatters are not installed automatically; use `:Mason` to browse packages and `:MasonInstall <package>` to install them. The configured LSP servers are enabled automatically only after you install them. Treesitter parsers are installed the first time you open a supported filetype.
 
-For example, use `:MasonInstall lua-language-server clangd vim-language-server html-lsp css-lsp stylua clang-format` for the configured LSP servers and formatters. Install `prettier` from Mason if Node.js/npm is available. For ERB formatting, install Ruby and run `gem install erb-formatter`.
+For example, use `:MasonInstall lua-language-server clangd vim-language-server html-lsp css-lsp stylua clang-format` for the configured LSP servers and formatters. Install `prettier` from Mason if Node.js/npm is available.
+
+### 3. optional ERB formatting
+
+Repeat these steps on each computer where you want ERB formatting. Install Ruby using your system package manager:
+
+- macOS: `brew install ruby`
+- Arch / Manjaro: `sudo pacman -S ruby`
+- Debian / Ubuntu: `sudo apt install ruby-full`
+
+Install the formatter for your user (do not use `sudo`):
+
+```sh
+gem install --user-install erb-formatter
+```
+
+Add Ruby's user gem `bin` directory to your shell startup file. For Bash, add this to `~/.profile`; for Zsh, add it to `~/.zprofile`:
+
+```sh
+export PATH="$(ruby -e 'print Gem.user_dir')/bin:$PATH"
+```
+
+Open a new terminal session and verify that `command -v erb-format` prints a path. ERB formatting is then available with `<leader>f` in Neovim.
 
 ## Command
 

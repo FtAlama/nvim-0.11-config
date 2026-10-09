@@ -34,7 +34,15 @@ vim.opt.rtp:prepend(lazypath)
 
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
+vim.g.loaded_perl_provider = 0
+
+local node_host = vim.fn.exepath("neovim-node-host")
+if node_host ~= "" then
+	vim.g.node_host_prog = node_host
+end
 
 require("vim-options")
 
-require("lazy").setup("plugins")
+require("lazy").setup("plugins", {
+	rocks = { enabled = false },
+})

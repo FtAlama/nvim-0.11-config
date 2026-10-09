@@ -38,7 +38,10 @@ return {
 			if #query_drivers > 0 then
 				table.insert(clangd_cmd, "--query-driver=" .. table.concat(query_drivers, ","))
 			end
-			vim.lsp.config("clangd", { cmd = clangd_cmd })
+			vim.lsp.config("clangd", {
+				cmd = clangd_cmd,
+				filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
+			})
 			vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Probleme sous le curseur" })
 
 			vim.api.nvim_create_autocmd("LspAttach", {
